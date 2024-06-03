@@ -5,58 +5,85 @@ import {
     TextInput, 
     View, 
     TouchableOpacity,
+    Platform,
+    Alert,
 } from "react-native";
-import Header from "./Header";
+import Footer from "./Footer";
 
 function Login() {
-    const [username, setUserName] = useState('')
-    const [password, setPassword] = useState('')
+    // estado inicial
+    const [formData, setFormData] = useState({
+        login: '',
+        senha: ''
+    })
 
-    // função que altera o texto
-    const toggleName = (text) => {
-        setUserName(text)
+    // atuliazar estados
+    const handleInputChange = (login, value) => {
+        setFormData({
+            ...formData,
+            [login]: value
+        })
     }
 
-    const togglePassword = (senha) => {
-        setPassword(senha)
-    }
-
-    const toggleResetar = () => {
-        setUserName('')
-        setPassword('')
+    // exibir os dados enviados
+    const handleSubmit = () => {
+        Alert.alert('Form Submitted', `Name: ${formData.login}\nEmail: ${formData.senha}`);
+        setFormData({
+            login: '',
+            senha: '',
+        })
     }
 
     return (
         <>  
-            <Text style={styles.nome}>Olá, Dev, seja bem-vindo!</Text>
-            <Header/>
-            <View style={styles.caixa}>
-                <Text style={styles.texto}>Login {username ? `do ${username}` : ""}</Text>
-                <TextInput 
-                    placeholder="Informe seu nome" 
-                    value={username} 
-                    onChangeText={toggleName}
-                    style={styles.inputText}
-                />
+            <View style={styles.header_container}>
+                <Text style={styles.header}>
+                    Central de Comunuicação do IFPI
+                </Text>
+                <Text style={styles.texto_menor}>
+                    Sua opinião também é importante!{'\n'}
+                    Nos conte como podemos melhorar ou se algo está fora do lugar!
+                </Text>
+            </View>
 
-                <TextInput
-                    style={styles.inputText}
-                    placeholder="Informe sua senha"
-                    value={password}
-                    onChangeText={togglePassword}
-                />
+            {/* formulário */}
+            <View style={styles.form}>
 
-
-                <View style={styles.button}>
-                    <TouchableOpacity onPressIn={toggleResetar}>
-                        <Text style={styles.buttonText}>Resetar</Text>
-                    </TouchableOpacity>
+                <View style={styles.titulo_container}>
+                    <Text style={styles.titulo}>
+                        SIGEM
+                    </Text>
                 </View>
 
-                {username && (
-                    <Text>Olá, {username}</Text>
-                )}
+                <View style={styles.container}>
+                    <Text>Login:</Text>
+                    <TextInput 
+                        placeholder="Informe seu nome" 
+                        value={formData.login} 
+                        onChangeText={(value) => handleInputChange('login', value)}
+                        style={styles.inputText}
+                    />
+                </View>
+
+                <View style={styles.container}>
+                    <Text>Senha:</Text>                
+                    <TextInput
+                        style={styles.inputText}
+                        placeholder="Informe sua senha"
+                        value={formData.senha}
+                        onChangeText={(value) => handleInputChange('senha', value)}
+                    />
+                </View>
+
+                <View style={styles.button}>
+                    <TouchableOpacity onPressIn={handleSubmit}>
+                        <Text style={styles.buttonText}>Entrar</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
+
+            {/* footer */}
+            <Footer/>
         </>
     )
 }
@@ -64,50 +91,92 @@ function Login() {
 export default Login;
 
 const styles = StyleSheet.create({
-    caixa: {
-        backgroundColor: "#fff",
+    header_container : {
+        marginTop: 60,
+        width: "100%",
+        height: 200,
+        backgroundColor: "#06b8ff",
+    },
+    header: {
+        color: "#fff",
+        marginTop: 10,
+        marginLeft: 10,
+        fontWeight: "500",
+        fontSize: 30,
+        textShadowColor: "#000",
+        textShadowRadius: 10
+    },
+    texto_menor: {
+        color: "#fff",
+        marginLeft: 10,
+        fontWeight: "500",
+        fontSize: 15,
+        textShadowColor: "#000",
+        textShadowRadius: 10
+    },
+    titulo_container: {
+        display: "flex",
+        justifyContent: "center",
+        backgroundColor: "#06b8ff",
+        width: 300,
+        height: 40,
+        borderRadius: 6,
+    },
+    titulo:{
+        fontWeight: "500",
+        fontSize: 20,
+        color: "#fff",
+        marginLeft: 5
+    },
+    form: {
+        // backgroundColor: "#fff",
         height: "50%",
         width: "100%",
-        marginTop: "5%",
+        marginTop: 60,
         display: "flex",
         alignItems: "center",
         flexDirection: "column",
         borderRadius: 10,
         gap: 30
     },
-    texto:{
-        fontWeight: "500",
-        fontSize: 20
-    },
-    nome: {
-        color: "#fff",
-        marginTop: 100,
-        marginBottom: 50,
-        fontWeight: "500",
-        fontSize: 30,
-        textShadowColor: "#000",
-        textShadowRadius: 10
-    },
     inputText: {
         color: "#000",
-        backgroundColor:"transparent",
-        height: "10%",
+        backgroundColor:"#fff",
+        height: 30,
         width: 300,
         borderRadius: 5,
         paddingLeft: 10,
         borderColor: "#000",
-        borderWidth: 1
+        // sintaxe para desenvolver voltado para o so
+        ...Platform.select({
+            ios: {
+                // Shadow for iOS
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 1,
+                shadowRadius: 5,
+            },
+            android: {
+                elevation: 10,
+            }
+        })
+    },
+    container : {
+        display: "flex",
+        gap: 1,
     },
     button: {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
         borderRadius: 5,
-        backgroundColor: "#297ded",
+        backgroundColor: "#fff",
         width: 100,
         height: 30,
+        shadowColor: "#000",
+        shadowRadius: 5,
     },
     buttonText: {
-        color: "#fff"
-    }
+        color: "#000"
+    },
 });
