@@ -1,6 +1,5 @@
 import { Link } from "expo-router";
 import { Text } from "react-native";
-import Perfil from "../user_components/Perfil";
 
 function Dashboard() {
     return (

@@ -52,7 +52,7 @@ function Caixa_relatos_admin() {
                     </TouchableOpacity>
                 </View> */}
                 <View style={styles.button}>
-                    <Link href={"/"} style={styles.buttonText}>Voltar</Link>
+                    <Link href="/" style={styles.buttonText}>Voltar</Link>
                 </View>            
             </View>
 

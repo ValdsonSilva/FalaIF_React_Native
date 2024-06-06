@@ -8,7 +8,7 @@ import {
     Platform,
     Alert,
 } from "react-native";
-import Footer from "./Footer";
+import Footer from "../layout_patterns_components/Footer";
 
 function Login() {
     // estado inicial
