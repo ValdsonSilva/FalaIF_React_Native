@@ -2,14 +2,13 @@ import { StyleSheet, Text, View } from "react-native";
 import { Link } from "expo-router";
 import Area_admin from "./components/admin_components/Area_admin";
 import Login from "./components/login/Login"
-// import index from "./components/admin_components/relatos/Caixa_relatos_admin"
+import User_area from "./components/user_components/User_area"
 
 export default function Page() {
   return (
     <View style={styles.container}>
-      {/* <Area_admin/> */}
-      {/* <Caixa_relatos_admin/> */}
-      <Login/>
+      {/* <Login/> */}
+      <User_area/>
     </View>
   );
 }
