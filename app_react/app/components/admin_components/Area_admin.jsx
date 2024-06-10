@@ -2,6 +2,7 @@ import { Link } from "expo-router"
 import { Alert, Button, Platform, StyleSheet, Text, View } from "react-native"
 import Footer from "../layout_patterns_components/Footer"
 
+
 function Area_admin() {
     return (
         <>  
@@ -20,13 +21,13 @@ function Area_admin() {
 
             {/* Links de navegação */}
             <View style={styles.nav_container}>
-                <Link style={styles.interacoes_alunos} href="./components/admin_components/relatos/Caixa_relatos_admin">  
+                <Link style={styles.interacoes_alunos} href="./relatos/Caixa_relatos_admin">  
                     Acompanhe as interações dos alunos{`\n`}
                     <Text style={styles.texto_pequeno}>
                         Vejas as interaçõea ativas ;)
                     </Text>
                 </Link>
-                <Link style={styles.interacoes_finalizadas} href={() => Alert.alert("Interações finalizadas")}>
+                <Link style={styles.interacoes_finalizadas} href="./interacoes_finalizadas/Interacoes_finalizadas">
                     Interações finalizadas{`\n`}
                     <Text style={styles.texto_pequeno}>
                         Vejas as interaçõea ativas ;)*

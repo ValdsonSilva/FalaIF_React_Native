@@ -2,7 +2,6 @@ import { Link } from "expo-router";
 import { Platform, StyleSheet, Text, View } from "react-native";
 import Footer from "../layout_patterns_components/Footer";
 
-
 function Perfil() {
     return (
         <>
@@ -22,19 +21,19 @@ function Perfil() {
 
             {/* Links de navegação */}
             <View style={styles.nav_container}>
-                <Link style={styles.nova_interacao} href="./components/user_components/nova_interacao/Nova_interacao">  
+                <Link style={styles.nova_interacao} href="../user_components/nova_interacao/Nova_interacao">  
                     <Text style={styles.texto_grande}>Nova interação{`\n`}</Text>
                     <Text style={styles.texto_pequeno}>
                         Nos diga o que você quer nos contar ;)
                     </Text>
                 </Link>
-                <Link style={styles.acompanha_interacoes} href="./components/user_components/user_interacoes/User_interacoes">
+                <Link style={styles.acompanha_interacoes} href="../user_components/user_interacoes/User_interacoes">
                     <Text style={styles.texto_grande}>Acompanhe suas interações{`\n`}</Text>
                     <Text style={styles.texto_pequeno}>
                         Vejas as interaçõea ativas ;)*
                     </Text>
                 </Link>
-                <Link style={styles.interacoes_finalizadas} href="./components/user_components/user_interacoes/User_interacoes">
+                <Link style={styles.interacoes_finalizadas} href="../user_components/Interacoes_finalizadas/Interacoes_finalizadas">
                     <Text style={styles.texto_grande}>Interações finalizadas{`\n`}</Text>
                     <Text style={styles.texto_pequeno}>
                         Revisite suas ideias ;)*

@@ -1,15 +1,16 @@
 import { Link } from "expo-router";
 import { Text } from "react-native";
+import Area_admin from "../Area_admin";
 
-function Dashboard() {
+function Interacoes_finalizadas() {
     return (
         <>
             <Text>Tela do Admin</Text>
-            <Link href={"../user_components/Perfil"}>
+            <Link href="../Area_admin">
                 Ir par o perfil
             </Link>
         </>
     )
 }
 
-export default Dashboard
+export default Interacoes_finalizadas

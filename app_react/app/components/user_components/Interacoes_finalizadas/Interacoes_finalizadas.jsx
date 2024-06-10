@@ -1,7 +1,9 @@
 import { Text } from "react-native";
 
-function interacoes_finalizadas() {
+function Interacoes_finalizadas() {
     return (
         <Text>Suas interacoes finalizadas!</Text>
     )
 }
+
+export default Interacoes_finalizadas

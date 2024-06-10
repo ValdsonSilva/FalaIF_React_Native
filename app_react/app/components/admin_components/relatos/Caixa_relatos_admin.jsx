@@ -1,11 +1,7 @@
-import { Link } from "expo-router"
-import { Alert, 
-        FlatList, 
-        Pressable, 
-        StyleSheet, 
-        Text, 
-        TouchableOpacity, 
-        View } from "react-native"
+import { Link } from "expo-router";
+import { Alert, FlatList, Pressable, StyleSheet, Text, View } from "react-native";
+import Header from "../../layout_patterns_components/Header";
+
 
 function Caixa_relatos_admin() {
 
@@ -45,16 +41,7 @@ function Caixa_relatos_admin() {
 
     return (
         <>
-            <View style={styles.header_container}>
-                {/* <View style={styles.button}>
-                    <TouchableOpacity onPressIn={() => Alert.alert("Você voltou")}>
-                        <Text style={styles.buttonText}>Voltar</Text>
-                    </TouchableOpacity>
-                </View> */}
-                <View style={styles.button}>
-                    <Link href="/" style={styles.buttonText}>Voltar</Link>
-                </View>            
-            </View>
+            <Header/>
 
             <View style={styles.titulo_container}>
                 <Text style={styles.titulo}>

@@ -20,8 +20,8 @@ const styles = StyleSheet.create({
         display: "flex",
         justifyContent: "center",
         backgroundColor: "#000",
-        marginTop: "auto",
-        position: "static",
+        position:"absolute", // essa propo e 
+        bottom: 0, // essa prop fazem com que o footer fique fixo na parte de baixo
         width: "100%",
         height: 80,
     },
