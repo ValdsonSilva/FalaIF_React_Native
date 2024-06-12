@@ -174,13 +174,13 @@ const styles = StyleSheet.create({
         fontWeight: "500"
     },
     botao_enviar: {
-        backgroundColor: "#fff", 
-        color: "#000",
+        backgroundColor: "#12c6ff", 
+        color: "#fff",
         width: 200,
         height: 50,
         textAlignVertical: "center",
         textAlign: "center",
-        fontSize: 12,
+        fontSize: 16,
         borderRadius: 10,
         borderStyle: "solid",
         borderColor: "#000",

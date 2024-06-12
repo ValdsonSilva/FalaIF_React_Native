@@ -11,6 +11,8 @@ function Login() {
         senha: ''
     })
 
+    
+
     // atuliazar estados
     const handleInputChange = (login, value) => {
         setFormData({
@@ -121,7 +123,7 @@ function Login() {
             </KeyboardAvoidingView>
 
             {/* footer */}
-            {/* <Footer /> */}
+            {/* <Footer />s */}
         </>
     );
 }
@@ -133,6 +135,7 @@ const styles = StyleSheet.create({
         width: "100%",
         height: 200,
         backgroundColor: "#06b8ff",
+        marginTop: 50,
     },
     header: {
         color: "#fff",
@@ -204,10 +207,10 @@ const styles = StyleSheet.create({
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        borderRadius: 5,
-        backgroundColor: "#fff",
+        borderRadius: 7,
+        backgroundColor: "#12c6ff",
         width: 100,
-        height: 30,
+        height: 50,
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0,
@@ -215,6 +218,8 @@ const styles = StyleSheet.create({
         elevation: 5,
     },
     buttonText: {
-        color: "#000"
+        color: "#fff",
+        fontSize: 15,
+        fontWeight: "500",
     },
 });

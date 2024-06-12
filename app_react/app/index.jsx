@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
 import Login from './components/login/Login'
-// import second from "./components/admin_components/Area_admin"
+import Caixa_relatos from "./components/admin_components/relatos/Caixa_relatos_admin"
 
 
 export default function Page() {
@@ -13,10 +13,13 @@ export default function Page() {
 
 const styles = StyleSheet.create({
   container: {
+    // flex: 1,
+    // alignItems: 'center',
+    // justifyContent: 'center',
     display: "flex",
     width: "100%",
     height: "100%",
     backgroundColor: "#64ffbb",
     alignItems: 'center',
-  },
+  }
 });

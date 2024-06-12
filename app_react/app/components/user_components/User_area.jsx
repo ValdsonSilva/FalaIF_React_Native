@@ -85,9 +85,10 @@ const styles = StyleSheet.create({
         fontSize: 20,
     },
     nav_container: {
+        flex: 1,
+        alignItems: 'center',
         display: "flex",
         flexDirection: "column",
-        justifyContent: "center",
         alignItems: "center",
         gap: 50,
         marginTop: 100,

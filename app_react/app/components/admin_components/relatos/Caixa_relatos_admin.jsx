@@ -139,7 +139,8 @@ const styles = StyleSheet.create({
         textShadowColor: "#000",
         textShadowRadius: 7,
         fontSize: 16,
-        fontWeight: "500"
+        fontWeight: "500",
+        textAlign: "center"
     },
     container: {
         flex: 1,
@@ -171,13 +172,13 @@ const styles = StyleSheet.create({
         elevation: 2, // For Android
     },
     botao_fechamento: {
-        backgroundColor: "#fff", 
-        color: "#000",
+        backgroundColor: "#12c6ff", 
+        color: "#fff",
         width: 200,
         height: 50,
         textAlignVertical: "center",
         textAlign: "center",
-        fontSize: 12,
+        fontSize: 16,
         borderRadius: 20,
         borderStyle: "solid",
         borderColor: "#000",
