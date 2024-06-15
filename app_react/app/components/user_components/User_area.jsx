@@ -1,10 +1,14 @@
 import { Link } from "expo-router";
 import { Platform, StyleSheet, Text, View } from "react-native";
 import Footer from "../layout_patterns_components/Footer";
+import ProtectedRoute from "../../protected_router/ProtectedRoute";
+import { useAuth } from "../../auth_context/AuthContext";
 
 function Perfil() {
+    const {logout} = useAuth()
+
     return (
-        <>
+        <ProtectedRoute>
             {/* header */}
             <View style={styles.header_container}>
                 <Text style={styles.header}>
@@ -12,7 +16,7 @@ function Perfil() {
                 </Text>
 
                 <View style={styles.button}>
-                    <Link style={styles.buttonText} href="/">
+                    <Link style={styles.buttonText} href="/" onPress={() => logout}>
                         Sair
                     </Link>
                 </View>
@@ -42,7 +46,7 @@ function Perfil() {
             </View>
 
             <Footer/>
-        </>
+        </ProtectedRoute>
     )
 }
 

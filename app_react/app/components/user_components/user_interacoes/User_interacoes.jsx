@@ -1,8 +1,11 @@
 import { Text } from "react-native"
+import ProtectedRoute from "../../../protected_router/ProtectedRoute"
 
 function User_interacoes() {
     return (
-        <Text>Suas interacoes</Text>
+        <ProtectedRoute>    
+            <Text>Suas interacoes</Text>
+        </ProtectedRoute>
     )
 }
 

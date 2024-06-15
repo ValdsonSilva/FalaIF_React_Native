@@ -2,6 +2,7 @@ import { View, TextInput, Button, StyleSheet, Text, Alert, Pressable, ScrollView
 import Header from "../../layout_patterns_components/Header"
 import Footer from "../../layout_patterns_components/Footer"
 import { useState } from 'react';
+import ProtectedRoute from '../../../protected_router/ProtectedRoute';
 
 function Nova_interacao() {
     const [idTipoChamado, setIdTipoChamado] = useState('');
@@ -16,7 +17,7 @@ function Nova_interacao() {
     };
 
     return (
-        <>
+        <ProtectedRoute>
             <Header/>
 
             <KeyboardAvoidingView
@@ -128,7 +129,7 @@ function Nova_interacao() {
 
             <Footer/>
             </KeyboardAvoidingView>
-        </>
+        </ProtectedRoute>
     )
 }
 

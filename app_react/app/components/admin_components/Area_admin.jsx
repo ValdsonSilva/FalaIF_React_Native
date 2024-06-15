@@ -1,11 +1,17 @@
 import { Link } from "expo-router"
 import { Alert, Button, Platform, StyleSheet, Text, View } from "react-native"
 import Footer from "../layout_patterns_components/Footer"
+import ProtectedRoute from "../../protected_router/ProtectedRoute"
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import { useAuth } from "../../auth_context/AuthContext"
 
 
 function Area_admin() {
+
+    const {logout} = useAuth();
+
     return (
-        <>  
+        <ProtectedRoute>  
             {/* header */}
             <View style={styles.header_container}>
                 <Text style={styles.header}>
@@ -13,7 +19,7 @@ function Area_admin() {
                 </Text>
 
                 <View style={styles.button}>
-                    <Link style={styles.buttonText} href="/">
+                    <Link style={styles.buttonText} href="/" onPress={() => logout}>
                         Sair
                     </Link>
                 </View>
@@ -36,7 +42,7 @@ function Area_admin() {
             </View>
 
             <Footer/>
-        </>
+        </ProtectedRoute>
     )
 }
 

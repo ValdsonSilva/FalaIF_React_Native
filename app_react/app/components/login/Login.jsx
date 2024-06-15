@@ -1,67 +1,61 @@
 import { useState } from "react";
-import { Text, StyleSheet,TextInput, View, TouchableOpacity,Platform, Alert, KeyboardAvoidingView, ScrollView, TouchableWithoutFeedback, Keyboard } from "react-native";
+import { Text, StyleSheet,TextInput, View, TouchableOpacity,Platform, Alert, KeyboardAvoidingView, ScrollView, TouchableWithoutFeedback, Keyboard, ActivityIndicator } from "react-native";
 import Footer from "../layout_patterns_components/Footer";
 import { router } from "expo-router";
-// import {} from "../admin_components/Area_admin"
+import { useAuth } from "../../auth_context/AuthContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import api from "../../api";
+
 
 function Login() {
+
+    const {login, verifyToken} = useAuth();
+    const token = AsyncStorage.getItem('token') ? AsyncStorage.getItem('token') : "";
+    const refreshToken = AsyncStorage.getItem('refreshToken') ? AsyncStorage.getItem("refreshToken") : "";
+
+    const [loading, setLoading] = useState(false);
+
     // estado inicial
     const [formData, setFormData] = useState({
-        login: '',
+        loginForm: '',
         senha: ''
     })
 
-    
-
     // atuliazar estados
     const handleInputChange = (login, value) => {
+
+        if (login === 'loginForm') {
+            value = value.replace(/[^0-9]/g, '')
+        }
         setFormData({
             ...formData,
-            [login]: value
+            [login] : value
         })
     }
-
-    const validLogins = {
-        login1 : {
-            nome : "Admin",
-            senha : "1"
-        },
-        login2 : {
-            nome : "Usuario",
-            senha : "2"
-        }
-    }
-
 
     // exibir os dados enviados
-    const handleSubmit = () => {
-        const { login, senha } = formData;
+    const handleSubmit = async () => {
+        const { loginForm, senha } = formData;
+
+        console.log("Login e senha: ", {loginForm, senha})
+        setLoading(true)
 
         // Se os campos forem vazios, retorna uma mensagem de alerta
-        if (!login & !senha) {
+        if (!loginForm || !senha) {
             Alert.alert("Preencha os campos do formulário!")
             router.push("/")
-
+        } else if (loginForm || senha) {
+            // criar os tokens/fazer login no app
+            await login(loginForm, senha)
+            setFormData({
+                loginForm: '',
+                senha: '',
+            })
         } else {
-
-            if (validLogins.login1.nome === login & validLogins.login1.senha === senha) {
-                // se for Admin
-                router.push("./components/admin_components/Area_admin")
-
-            } else if (validLogins.login2.nome === login & validLogins.login2.senha === senha) {
-                // se for um aluno
-                router.push('./components/user_components/User_area') 
-
-            } else {
-                Alert.alert("Usuário não encontrado")
-                router.push("/")
-            }
+            Alert.alert("Usuário não encontrado!")
         }
 
-        setFormData({
-            login: '',
-            senha: '',
-        })
+        setLoading(false)
     }
 
     return (
@@ -93,10 +87,12 @@ function Login() {
                             <View style={styles.container}>
                                 <Text>Login:</Text>
                                 <TextInput 
-                                    placeholder="Informe seu nome" 
-                                    value={formData.login} 
-                                    onChangeText={(value) => handleInputChange('login', value)}
+                                    placeholder="Informe seu CPF" 
+                                    value={formData.loginForm} 
+                                    onChangeText={(value) => handleInputChange('loginForm', value)}
                                     style={styles.inputText}
+                                    maxLength={11}
+                                    keyboardType="default"
                                 />
                             </View>
 
@@ -108,12 +104,20 @@ function Login() {
                                     value={formData.senha}
                                     onChangeText={(value) => handleInputChange('senha', value)}
                                     secureTextEntry={true}
+                                    maxLength={9}
+                                    keyboardType="default"
                                 />
                             </View>
 
                             <View style={styles.button}>
                                 <TouchableOpacity onPressIn={handleSubmit}>
-                                    <Text style={styles.buttonText}>Entrar</Text>
+                                    <TouchableOpacity onPress={handleSubmit} disabled={loading}>
+                                        {loading ? (
+                                            <ActivityIndicator size={"small"} color={"#fff"}/>
+                                        ) : (
+                                            <Text style={styles.buttonText}>Entrar</Text>
+                                        )}
+                                    </TouchableOpacity>
                                 </TouchableOpacity>
                             </View>
 

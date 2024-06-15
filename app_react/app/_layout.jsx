@@ -16,11 +16,6 @@ export default function Layout() {
             </View>
         </ImageBackground>
       </AuthProvider>
-      // <ImageBackground style={styles.background}>
-      //   <View style={styles.overlay}>
-      //       <Slot/>
-      //   </View>
-      // </ImageBackground>
     )
 }
 

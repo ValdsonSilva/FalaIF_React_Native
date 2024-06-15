@@ -1,6 +1,7 @@
 import { Link } from "expo-router";
 import { Alert, FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import Header from "../../layout_patterns_components/Header";
+import ProtectedRoute from "../../../protected_router/ProtectedRoute";
 
 
 function Caixa_relatos_admin() {
@@ -40,7 +41,7 @@ function Caixa_relatos_admin() {
     ]
 
     return (
-        <>
+        <ProtectedRoute>
             <Header/>
 
             <View style={styles.titulo_container}>
@@ -71,7 +72,7 @@ function Caixa_relatos_admin() {
                     scrollEnabled
                 />
             </View>
-        </>
+        </ProtectedRoute>
     )
 }
 

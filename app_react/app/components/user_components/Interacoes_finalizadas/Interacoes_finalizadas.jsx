@@ -1,8 +1,11 @@
 import { Text } from "react-native";
+import ProtectedRoute from "../../../protected_router/ProtectedRoute";
 
 function Interacoes_finalizadas() {
     return (
-        <Text>Suas interacoes finalizadas!</Text>
+        <ProtectedRoute>
+            <Text>Suas interacoes finalizadas!</Text>
+        </ProtectedRoute>
     )
 }
 
