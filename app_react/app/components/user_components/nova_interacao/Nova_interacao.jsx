@@ -1,20 +1,91 @@
-import { View, TextInput, Button, StyleSheet, Text, Alert, Pressable, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, TextInput, StyleSheet, Text, Alert, Pressable, KeyboardAvoidingView, Platform } from 'react-native';
 import Header from "../../layout_patterns_components/Header"
 import Footer from "../../layout_patterns_components/Footer"
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import ProtectedRoute from '../../../protected_router/ProtectedRoute';
+import api from '../../../api';
+import { useAuth } from '../../../auth_context/AuthContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useSafeAreaFrame } from 'react-native-safe-area-context';
+
+const getCurrentDate = () => {
+    const currentDate = new Date();
+    return currentDate
+}
 
 function Nova_interacao() {
     const [idTipoChamado, setIdTipoChamado] = useState('');
     const [titulo, setTitulo] = useState('');
     const [textoChamado, setTextoChamado] = useState('');
-    const [idBloco, setIdBloco] = useState('');
-    const [idSala, setIdSala] = useState('');
+    const [bloco, setBloco] = useState('');
+    const [mensagem, setMensagem] = useState("")
+    const {decodeToken} = useAuth();
+    const [user_id, setUserid] = useState("")
+    const date = getCurrentDate();
 
-    const handleSubmit = () => {
-        // Aqui você pode adicionar a lógica de envio do formulário
-        Alert.alert('Formulário enviado!', `Tipo Chamado: ${idTipoChamado}\nTítulo: ${titulo}\nTexto: ${textoChamado}\nBloco: ${idBloco}\nSala: ${idSala}`);
+    const loadToken = async () => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+            return token;
+
+        } catch (error) {
+            console.error("Error fetching token", error);
+            return null;
+
+        }
     };
+
+    useEffect(() => {
+        const processToken = async () => {
+            const token = await loadToken();
+            console.log("Token no usuário: " + token);
+        
+            if (token) {
+                try {
+                    const tokenDecodificado = decodeToken(token);
+                    console.log("Token decode no nova_interação: ", tokenDecodificado);
+                    setUserid(tokenDecodificado.user_id)
+                } catch (error) {
+                    console.error("Erro ao decodificar o token: ", error);
+                }
+            } else {
+                console.log("No token found");
+                return null
+            }
+        };
+        processToken()
+    }, [])
+
+    // const token_processado = processToken()
+    // setUserid(token_processado)
+    console.log("Id do usuário: ", user_id)
+
+
+    const handleSubmit = async () => {
+        // Aqui você pode adicionar a lógica de envio do formulário
+
+        try {
+                const response = await api.post("/api/ouvidoria/v1/reclamacoes/",{
+                    usuario: user_id,
+                    status_reclamacao: 0,
+                    tipo_reclamacao: idTipoChamado,
+                    bloco: bloco,
+                    data_reclamacao: date,
+                    descricao_reclamacao: textoChamado,
+                    titulo: titulo,
+                    lida: true
+                })
+                setMensagem("Reclamação registrada!")
+        } catch (error) {
+                setMensagem("Erro ao enviar reclamação!")
+        } 
+
+        Alert.alert('Formulário enviado!', `Tipo Chamado: ${idTipoChamado}\nTítulo: ${titulo}\nTexto: ${textoChamado}\nBloco: ${bloco}`);
+    };
+
+    setTimeout(() => {
+        setMensagem("")
+    }, 5000)
 
     return (
         <ProtectedRoute>
@@ -26,64 +97,18 @@ function Nova_interacao() {
             >
             <View style={styles.titulo_container}>
                 <Text style={styles.titulo}>
-                    Acompanhe as sugestões dos alunos
+                    Registre a sua reclamação
                 </Text>
             </View>
-            {/* <ScrollView contentContainerStyle={styles.container}>
-                    <Text style={styles.label}>ID Tipo Chamado</Text>
-                    <TextInput
-                        style={styles.input}
-                        value={idTipoChamado}
-                        onChangeText={setIdTipoChamado}
-                        placeholder="Digite o ID Tipo Chamado"
-                    />
-                    
-                    <Text style={styles.label}>Título</Text>
-                    <TextInput
-                        style={styles.input}
-                        value={titulo}
-                        onChangeText={setTitulo}
-                        placeholder="Digite o Título"
-                    />
-                    
-                    <Text style={styles.label}>Texto Chamado</Text>
-                    <TextInput
-                        style={styles.input}
-                        value={textoChamado}
-                        onChangeText={setTextoChamado}
-                        placeholder="Digite o Texto Chamado"
-                        multiline
-                    />
-                    
-                    <Text style={styles.label}>ID Bloco</Text>
-                    <TextInput
-                        style={styles.input}
-                        value={idBloco}
-                        onChangeText={setIdBloco}
-                        placeholder="Digite o ID Bloco"
-                    />
-                    
-                    <Text style={styles.label}>ID Sala</Text>
-                    <TextInput
-                        style={styles.input}
-                        value={idSala}
-                        onChangeText={setIdSala}
-                        placeholder="Digite o ID Sala"
-                    />
-                    
-                    <Pressable
-                        onPress={handleSubmit}
-                    >
-                        <Text style={styles.botao_enviar}>Enviar</Text>
-                    </Pressable>
-            </ScrollView> */}
+
             <View style={styles.container}>
-                    <Text style={styles.label}>ID Tipo Chamado</Text>
+                    <Text style={mensagem === "Reclamação registrada!" ? styles.sucesso : styles.erro}>{mensagem !== "" ? mensagem : ""}</Text>
+                    <Text style={styles.label}>Tipo chamado</Text>
                     <TextInput
                         style={styles.input}
                         value={idTipoChamado}
                         onChangeText={setIdTipoChamado}
-                        placeholder="Digite o ID Tipo Chamado"
+                        placeholder="Informe o tipo do chamado"
                     />
                     
                     <Text style={styles.label}>Título</Text>
@@ -91,32 +116,24 @@ function Nova_interacao() {
                         style={styles.input}
                         value={titulo}
                         onChangeText={setTitulo}
-                        placeholder="Digite o Título"
+                        placeholder="Informe o título do chamado"
                     />
                     
-                    <Text style={styles.label}>Texto Chamado</Text>
+                    <Text style={styles.label}>Descrição</Text>
                     <TextInput
                         style={styles.input}
                         value={textoChamado}
                         onChangeText={setTextoChamado}
-                        placeholder="Digite o Texto Chamado"
+                        placeholder="Informe a descrição do chamado"
                         multiline
                     />
                     
-                    <Text style={styles.label}>ID Bloco</Text>
+                    <Text style={styles.label}>Bloco</Text>
                     <TextInput
                         style={styles.input}
-                        value={idBloco}
-                        onChangeText={setIdBloco}
-                        placeholder="Digite o ID Bloco"
-                    />
-                    
-                    <Text style={styles.label}>ID Sala</Text>
-                    <TextInput
-                        style={styles.input}
-                        value={idSala}
-                        onChangeText={setIdSala}
-                        placeholder="Digite o ID Sala"
+                        value={bloco}
+                        onChangeText={setBloco}
+                        placeholder="Informe bloco"
                     />
                     
                     <Pressable
@@ -127,7 +144,7 @@ function Nova_interacao() {
             </View>
 
 
-            <Footer/>
+            {/* <Footer/> */}
             </KeyboardAvoidingView>
         </ProtectedRoute>
     )
@@ -145,11 +162,21 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         flexDirection: "column",
-        paddingBottom: 100,
+        paddingBottom:30,
     },
     scrollContainer: {
         // padding: 20,
         // flexGrow: 1,
+    },
+    sucesso : {
+        fontSize: 30,
+        fontWeight: "600",
+        color: "green"
+    },
+    erro : {
+        fontSize: 30,
+        fontWeight: "600",
+        color: "red"
     },
     titulo_container: {
         display: "flex",
@@ -160,7 +187,7 @@ const styles = StyleSheet.create({
         height: 60,
         borderRadius: 10,
         marginTop: 10,
-        marginBottom: 20,
+        marginBottom: 0,
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0,

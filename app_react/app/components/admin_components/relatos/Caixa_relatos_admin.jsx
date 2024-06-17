@@ -1,44 +1,73 @@
 import { Link } from "expo-router";
-import { Alert, FlatList, Pressable, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Alert, FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import Header from "../../layout_patterns_components/Header";
 import ProtectedRoute from "../../../protected_router/ProtectedRoute";
+import api from "../../../api";
+import { useEffect, useState } from "react";
 
 
 function Caixa_relatos_admin() {
+    const [relatos, setRelatos] = useState([])
+    const [carregamento, setCarregamento] = useState(false)
 
-    const relatos = [
-        {
-            id_chamado: 1,
-            titulo: "Radio com problema",
-            texto_chamado: "Radio está com problemas elétricos",
-            id_bloco: "",
-            id_sala: "",
-            campos: "IFPI-Floriano",
-            status: "lida",
-            situação: "1-aberto"
-        },
-        {
-            id_chamado: 2,
-            titulo: "Radio com problema",
-            texto_chamado: "Radio está com problemas elétricos",
-            id_bloco: "",
-            id_sala: "",
-            campos: "IFPI-Floriano",
-            status: "lida",
-            situação: "1-aberto"
-        },
-        {
-            id_chamado: 3,
-            titulo: "Radio com problema",
-            texto_chamado: "Radio está com problemas elétricos",
-            id_bloco: "",
-            id_sala: "",
-            campos: "IFPI-Floriano",
-            status: "lida",
-            situação: "1-aberto"
-        },
+    useEffect(() => {
 
-    ]
+        const carregar_relatos = async () => {
+            try {
+                const response = await api.get("/api/ouvidoria/v1/reclamacoes/")
+
+                if (response.status < 200 || response.status >= 300) {
+                    throw new Error("Erro nos relatos" + response.status)
+                }
+
+                setRelatos(response.data)
+                console.log("Relatos: ", response.data)
+                setCarregamento(true)
+
+            } catch (error) {
+                console.log("Erro ao carregar relatos " + error.status)
+
+            } 
+        }
+
+        carregar_relatos()
+
+    }, [relatos])
+
+
+    // const relatos = [
+    //     {
+    //         id_chamado: 1,
+    //         titulo: "Radio com problema",
+    //         texto_chamado: "Radio está com problemas elétricos",
+    //         id_bloco: "",
+    //         id_sala: "",
+    //         campos: "IFPI-Floriano",
+    //         status: "lida",
+    //         situação: "1-aberto"
+    //     },
+    //     {
+    //         id_chamado: 2,
+    //         titulo: "Radio com problema",
+    //         texto_chamado: "Radio está com problemas elétricos",
+    //         id_bloco: "",
+    //         id_sala: "",
+    //         campos: "IFPI-Floriano",
+    //         status: "lida",
+    //         situação: "1-aberto"
+    //     },
+    //     {
+    //         id_chamado: 3,
+    //         titulo: "Radio com problema",
+    //         texto_chamado: "Radio está com problemas elétricos",
+    //         id_bloco: "",
+    //         id_sala: "",
+    //         campos: "IFPI-Floriano",
+    //         status: "lida",
+    //         situação: "1-aberto"
+    //     },
+
+    // ]
 
     return (
         <ProtectedRoute>
@@ -51,7 +80,11 @@ function Caixa_relatos_admin() {
             </View>
             
             <View style={styles.container}>
-                <FlatList
+
+                {carregamento ? <ActivityIndicator size={"large"} color="#fff"/> : ""}
+
+                {relatos ? 
+                    <FlatList
                     data={relatos}
                     renderItem={({item}) => (
                         <View style={styles.list_item}>
@@ -70,7 +103,8 @@ function Caixa_relatos_admin() {
                     )}
                     keyExtractor={(item) => item.id_chamado.toString()}
                     scrollEnabled
-                />
+                  />
+                : <Text>Não há relatos!</Text>}
             </View>
         </ProtectedRoute>
     )

@@ -4,8 +4,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from "react-native";
 import { router } from "expo-router";
 import {jwtDecode} from "jwt-decode";
-import axios from "axios";
-import url_base from "../url_base";
 
 
 // módulo de verificação de login dos usuários do sistema
@@ -20,18 +18,23 @@ export const AuthProvider = ({ children }) => {
     const [token, setToken] = useState(null)
     const [refreshToken, setRefreshToken] = useState(null)
 
-
+    // redireciona o user caso ele tenha uma sessão criada
     useEffect(() => {
         const loadStoredAuth = async () => {
             try {
                 const storedToken = await AsyncStorage.getItem('token')
                 const storedRefreshToken = await AsyncStorage.getItem('refreshToken')
                 
+                // verifica sem tem sessão armazenada
                 if (storedToken && storedRefreshToken) {
-                    setToken(storedToken)
-                    setRefreshToken(storedRefreshToken)
-                    setIsAuthenticated(true)
-                    // await verifyToken(storedToken, storedRefreshToken)
+                    // verifica o token
+                    if (await verifyToken(storedToken, storedRefreshToken) === "" || await refreshAccessToken(storedRefreshToken) === "") {
+                        setToken(storedToken)
+                        setRefreshToken(storedRefreshToken)
+                        setIsAuthenticated(true)
+                        redirecionarParaProximaTela(storedToken)
+                    }
+                    
                 }
             } catch (error) {
                 console.error("Falha ao carregar dados da autenticação armazenada");
@@ -39,7 +42,7 @@ export const AuthProvider = ({ children }) => {
         }
 
         loadStoredAuth();
-    }, [token])
+    }, [])
 
     // função de login que altera para true o estado inicial
     const login = async (CPF, senha) => {
@@ -75,12 +78,11 @@ export const AuthProvider = ({ children }) => {
         }
     }
 
+    // função que redireciona o user pós login a depender do seu tipo
     async function redirecionarParaProximaTela(token) {
   
         const tokenDecodificado = decodeToken(token)
         console.log(tokenDecodificado)
-
-        /* `api/gerusuarios/v1/users/${id}` */
         
         // verificando o tipo de usuário
         await verificarTipoUsuario(tokenDecodificado.user_id).then((resp) => {
@@ -134,7 +136,7 @@ export const AuthProvider = ({ children }) => {
     const verifyToken = async (token, refresh) => {
 
         try {
-            const response = await api.post("/api/token/verify/", {token: token})
+            const response = await api.post("/api/token/verify/", {token : token})
 
             if (response.status < 200 || response.status >= 300) {
                 throw new Error("Erro ao verificar o token: " + response.status);
@@ -146,7 +148,7 @@ export const AuthProvider = ({ children }) => {
             
         } catch (error) {
             // Lidar com erros
-            console.error("Ocorreu um erro ao verificar o token: ", error.message);
+            console.log("Ocorreu um erro ao verificar o token: ", error.message);
 
             if (error.response && error.response.status === 401) {
                 // Consumir o endpoint do refresh token
@@ -159,39 +161,36 @@ export const AuthProvider = ({ children }) => {
         }
     }
 
+    // funçãp que consome o refresh token e gera um novo token de acesso
     const refreshAccessToken = async (refreshToken) => {
 
         const data = {
             refresh: refreshToken
         }
 
-        const options = {
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }
-
         try {
-            const response = await axios.post(url_base + "api/token/refresh/", data, options)
+            const response = await api.post("api/token/refresh/", data)
 
             // Se a resposta não for OK (status code não está entre 200 e 299), lançar um erro
-            if (!response.status < 200 || response.status >= 300) {
+            if (response.status < 200 || response.status >= 300) {
                 throw new Error(`Erro ao atualizar o token: ${response.status}`);
             }
 
             const {access} = response.data;
             setToken(access)
-            await AsyncStorage.setItem('token', ac)
+            await AsyncStorage.setItem('token', access)
             setIsAuthenticated(true);
             console.log("Token de acesso atualizado com sucesso!")
+            return ""
 
         } catch (error) {
-            console.error("Tempo de sessão expirado!");
+            console.log("Tempo de sessão expirado!");
             logout();
             router.push("/");
         }
     }
 
+    // função de decodificar o token
     function decodeToken(token) {
         try {
             const decodeToken = jwtDecode(token)
@@ -203,9 +202,26 @@ export const AuthProvider = ({ children }) => {
         }
     }
 
+    const getCurrentDateFormatted = () => {
+        const currentDate = new Date();
+        const day = String(currentDate.getDate()).padStart(2, '0');
+        const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // Janeiro é 0!
+        const year = currentDate.getFullYear();
+    
+        return `${day}/${month}/${year}`;
+    };
+
     // retornando o nosso provider com os dados do nosso contexto
     return (
-        <AuthContext.Provider value={{isAuthenticated, login, logout, verifyToken}}>
+        <AuthContext.Provider value={
+            {
+                isAuthenticated, 
+                login, 
+                logout, 
+                verifyToken, 
+                decodeToken, 
+                getCurrentDateFormatted
+            }}>
             {children}
         </AuthContext.Provider>
     );

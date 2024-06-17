@@ -19,7 +19,7 @@ function Area_admin() {
                 </Text>
 
                 <View style={styles.button}>
-                    <Link style={styles.buttonText} href="/" onPress={() => logout}>
+                    <Link style={styles.buttonText} href="/" onPress={() => logout()}>
                         Sair
                     </Link>
                 </View>
@@ -36,7 +36,7 @@ function Area_admin() {
                 <Link style={styles.interacoes_finalizadas} href="./interacoes_finalizadas/Interacoes_finalizadas">
                     Interações finalizadas{`\n`}
                     <Text style={styles.texto_pequeno}>
-                        Vejas as interaçõea ativas ;)*
+                        Vejas as interaçõea finalizadas ;)*
                     </Text>
                 </Link>
             </View>

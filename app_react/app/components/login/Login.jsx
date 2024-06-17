@@ -58,6 +58,8 @@ function Login() {
         setLoading(false)
     }
 
+    AsyncStorage.getItem("token").then(token => console.log("Sessão do usuário: ", token))
+
     return (
         <>  
             <View style={styles.header_container}>

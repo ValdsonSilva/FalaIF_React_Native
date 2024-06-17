@@ -16,7 +16,7 @@ function Perfil() {
                 </Text>
 
                 <View style={styles.button}>
-                    <Link style={styles.buttonText} href="/" onPress={() => logout}>
+                    <Link style={styles.buttonText} href="/" onPress={() => logout()}>
                         Sair
                     </Link>
                 </View>
