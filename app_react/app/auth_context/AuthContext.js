@@ -73,8 +73,8 @@ export const AuthProvider = ({ children }) => {
             }
 
         } catch (error) {
-            Alert.alert("Falha no login, tente novamenete!")
-            console.error("Falha no login", error)
+            Alert.alert("Falha no login, tente novamente!")
+            console.log("Falha no login", error)
         }
     }
 

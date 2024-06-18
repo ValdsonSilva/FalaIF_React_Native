@@ -6,7 +6,7 @@ import ProtectedRoute from '../../../protected_router/ProtectedRoute';
 import api from '../../../api';
 import { useAuth } from '../../../auth_context/AuthContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useSafeAreaFrame } from 'react-native-safe-area-context';
+import {Picker} from "@react-native-picker/picker";
 
 const getCurrentDate = () => {
     const currentDate = new Date();
@@ -17,8 +17,8 @@ function Nova_interacao() {
     const [idTipoChamado, setIdTipoChamado] = useState('');
     const [titulo, setTitulo] = useState('');
     const [textoChamado, setTextoChamado] = useState('');
-    const [bloco, setBloco] = useState('');
     const [mensagem, setMensagem] = useState("")
+    const [bloco, setBloco] = useState('');
     const {decodeToken} = useAuth();
     const [user_id, setUserid] = useState("")
     const date = getCurrentDate();
@@ -63,29 +63,71 @@ function Nova_interacao() {
 
     const handleSubmit = async () => {
         // Aqui você pode adicionar a lógica de envio do formulário
-
         try {
                 const response = await api.post("/api/ouvidoria/v1/reclamacoes/",{
                     usuario: user_id,
-                    status_reclamacao: 0,
+                    status_reclamacao: 1,
                     tipo_reclamacao: idTipoChamado,
                     bloco: bloco,
                     data_reclamacao: date,
                     descricao_reclamacao: textoChamado,
                     titulo: titulo,
-                    lida: true
+                    lida: false
                 })
                 setMensagem("Reclamação registrada!")
         } catch (error) {
                 setMensagem("Erro ao enviar reclamação!")
-        } 
-
-        Alert.alert('Formulário enviado!', `Tipo Chamado: ${idTipoChamado}\nTítulo: ${titulo}\nTexto: ${textoChamado}\nBloco: ${bloco}`);
+        } finally {         
+            console.log("Form enviado")
+            setIdTipoChamado('');
+            setTitulo('')
+            setTextoChamado('')
+            setBloco('')
+        }
     };
+
+    // get status_reclamação
+    // useEffect(() => {
+    //     const get_status_reclamacao =  async () => {
+
+    //         try {
+    //             const response = await api.get("/api/ouvidoria/v1/tiposeclamacoes/");
+    
+    //             if (response.status < 200 && response.status >= 300) {
+    //                 throw new Error("Erro");
+    //             }
+    
+    //             console.log("\ntipo_chamado_reclamação: ", response.data)
+    
+    //         } catch (error) {
+    //             console.log("Erro ao puxar os status de reclamação")
+    //         }
+    //     }
+    //     get_status_reclamacao()
+    // }, [])
+
+    useEffect(() => {
+        const get_status_reclamacao =  async () => {
+
+            try {
+                const response = await api.get("/api/ouvidoria/v1/blocos/");
+    
+                if (response.status < 200 && response.status >= 300) {
+                    throw new Error("Erro");
+                }
+    
+                console.log("\ntipo_chamado_reclamação: ", response.data)
+    
+            } catch (error) {
+                console.log("Erro ao puxar os status de reclamação")
+            }
+        }
+        get_status_reclamacao()
+    }, [])
 
     setTimeout(() => {
         setMensagem("")
-    }, 5000)
+    }, 20000)
 
     return (
         <ProtectedRoute>
@@ -104,12 +146,16 @@ function Nova_interacao() {
             <View style={styles.container}>
                     <Text style={mensagem === "Reclamação registrada!" ? styles.sucesso : styles.erro}>{mensagem !== "" ? mensagem : ""}</Text>
                     <Text style={styles.label}>Tipo chamado</Text>
-                    <TextInput
+                    <Picker 
+                        selectedValue={idTipoChamado}
                         style={styles.input}
-                        value={idTipoChamado}
-                        onChangeText={setIdTipoChamado}
-                        placeholder="Informe o tipo do chamado"
-                    />
+                        onValueChange={(itemValue, itemIndex) => setIdTipoChamado(itemValue)}
+                    >
+                        <Picker.Item label='Informe o tipo do chamado' value={""}/>
+                        <Picker.Item label='Estrutural' value={1}/>
+                        <Picker.Item label='Pessoal' value={2}/>
+                        <Picker.Item label='Acadêmico' value={3}/>
+                    </Picker>
                     
                     <Text style={styles.label}>Título</Text>
                     <TextInput
@@ -129,12 +175,17 @@ function Nova_interacao() {
                     />
                     
                     <Text style={styles.label}>Bloco</Text>
-                    <TextInput
-                        style={styles.input}
-                        value={bloco}
-                        onChangeText={setBloco}
-                        placeholder="Informe bloco"
-                    />
+                    <Picker
+                        selectedValue={bloco}  
+                        onValueChange={setBloco}
+                        style={styles.input}  
+                    >
+                        <Picker.Item label="Informe o bloco"  value={""}/>
+                        <Picker.Item label="Bloco J" value={1}/>
+                        <Picker.Item label="Bloco T" value={2}/>
+                        <Picker.Item label="Pátio" value={3}/>
+                        <Picker.Item label="Laboratório de informática" value={4}/>
+                    </Picker>
                     
                     <Pressable
                         onPress={handleSubmit}
@@ -154,7 +205,7 @@ export default Nova_interacao
 
 const styles = StyleSheet.create({
     container: {
-        // flex: 1,
+        flex: 1,
         backgroundColor: "#64ffbb",
         width: "100%",
         height: "100px",

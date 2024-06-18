@@ -7,12 +7,28 @@ import { useEffect, useState } from "react";
 
 
 function Caixa_relatos_admin() {
+
     const [relatos, setRelatos] = useState([])
+    const [tipoRelatos, setTipoRelatos] = useState([])
     const [carregamento, setCarregamento] = useState(false)
+    const tipo_relato = [
+        {   
+            descricao: "Estrutural", 
+            id: 1}, 
+        {
+            descricao: "Pessoal", 
+            id: 2
+        }, 
+        {
+            descricao: "Acadêmico", 
+            id: 3
+        }
+    ]
 
     useEffect(() => {
 
         const carregar_relatos = async () => {
+            setCarregamento(true)
             try {
                 const response = await api.get("/api/ouvidoria/v1/reclamacoes/")
 
@@ -20,19 +36,21 @@ function Caixa_relatos_admin() {
                     throw new Error("Erro nos relatos" + response.status)
                 }
 
-                setRelatos(response.data)
-                console.log("Relatos: ", response.data)
-                setCarregamento(true)
+                setRelatos(response.data.results)
+                console.log("Relatos: ", response.data.results)
+                
 
             } catch (error) {
                 console.log("Erro ao carregar relatos " + error.status)
 
-            } 
+            } finally {
+                setCarregamento(false)
+            }
         }
 
         carregar_relatos()
 
-    }, [relatos])
+    }, [])
 
 
     // const relatos = [
@@ -69,6 +87,33 @@ function Caixa_relatos_admin() {
 
     // ]
 
+    useEffect(() => {
+        const get_status_reclamacao =  async () => {
+
+            try {
+                const response = await api.get("/api/ouvidoria/v1/tiposeclamacoes/");
+    
+                if (response.status < 200 && response.status >= 300) {
+                    throw new Error("Erro");
+                }
+    
+                setTipoRelatos(response.data.results)
+            } catch (error) {
+                console.log("Erro ao puxar os status de reclamação")
+            }
+        }
+        get_status_reclamacao()
+    }, [])
+
+    console.log("\ntipo_chamado_reclamação: ", tipoRelatos) 
+
+    const relatosCompletos = relatos.map(relato => {
+        const tipoRelatoDescricao = tipo_relato.find(tr => tr.id === relato.status_reclamacao)?.descricao || "";
+        return tipoRelatoDescricao
+    });
+
+    console.log("Rela: ", relatosCompletos)
+
     return (
         <ProtectedRoute>
             <Header/>
@@ -84,27 +129,37 @@ function Caixa_relatos_admin() {
                 {carregamento ? <ActivityIndicator size={"large"} color="#fff"/> : ""}
 
                 {relatos ? 
-                    <FlatList
-                    data={relatos}
-                    renderItem={({item}) => (
-                        <View style={styles.list_item}>
-                            <Text style={{color: "darkblue", fontSize: 25, fontWeight: 500}}>{item.titulo}</Text>
-                            <Text>{item.texto_chamado}</Text>
-                            <Text style={{fontWeight: 500, fontSize: 12}}>Status: <Text>{item.status}</Text></Text>
+                        (<FlatList
+                            data={relatos}
+                            renderItem={({item}) => (
+                                <View style={styles.list_item}>
+                                    <Text style={{color: "darkblue", fontSize: 25, fontWeight: "500"}}>{item.titulo}</Text>
 
-                            <Pressable onPress={() => Alert.alert("É melhoor")}>
-                                <Text style={styles.botao_fechamento}>
-                                    Solicitar fechamento
-                                </Text>
-                            </Pressable>
-                            <Text style={{marginTop: 50}}>Jun, 05, 2024, 5:59 p.m.</Text>
-                            <Text>IFPI-Floriano</Text>
-                        </View>
-                    )}
-                    keyExtractor={(item) => item.id_chamado.toString()}
-                    scrollEnabled
-                  />
-                : <Text>Não há relatos!</Text>}
+                                    <Text>{item.descricao_reclamacao}</Text>
+
+                                    <Text style={{fontWeight: 500, fontSize: 12}}>
+                                        Status: <Text>
+                                                    {item.status_reclamacao === 1 ? "Estrutural" : ""}
+                                                    {item.status_reclamacao === 2 ? "Pessoal" : ""}
+                                                    {item.status_reclamacao === 3 ? "Acadêmico" : ""}
+                                                </Text>
+                                    </Text>
+
+                                    <Pressable onPress={() => Alert.alert("É melhoor")}>
+                                        <Text style={styles.botao_fechamento}>
+                                            Solicitar fechamento
+                                        </Text>
+                                    </Pressable>
+
+                                    <Text style={{marginTop: 50}}>{item.data_reclamacao}</Text>
+                                    <Text>IFPI-Floriano</Text>
+                                </View>
+                            )}
+                            keyExtractor={(item) => item.id.toString()}
+                            scrollEnabled
+                        />)
+                : (<Text>Não há relatos!</Text>)}
+
             </View>
         </ProtectedRoute>
     )

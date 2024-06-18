@@ -60,15 +60,16 @@ function Interacoes_finalizadas() {
                     data={relatos}
                     renderItem={({item}) => (
                         <View style={styles.list_item}>
-                            <Text style={{color: "darkblue", fontSize: 25, fontWeight: 500}}>{item.titulo}</Text>
+                            <Text style={{
+                                color: "darkblue", 
+                                fontSize: 25, 
+                                fontWeight: 500}}
+                            >
+                                {item.titulo}
+                            </Text>
                             <Text>{item.texto_chamado}</Text>
                             <Text style={{fontWeight: 500, fontSize: 12}}>Status: <Text>{item.status}</Text></Text>
 
-                            <Pressable onPress={() => Alert.alert("É melhoor")}>
-                                <Text style={styles.botao_fechamento}>
-                                    Solicitar fechamento
-                                </Text>
-                            </Pressable>
                             <Text style={{marginTop: 50}}>Jun, 05, 2024, 5:59 p.m.</Text>
                             <Text>IFPI-Floriano</Text>
                         </View>
