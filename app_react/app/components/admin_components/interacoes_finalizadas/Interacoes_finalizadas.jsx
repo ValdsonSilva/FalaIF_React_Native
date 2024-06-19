@@ -1,11 +1,17 @@
 import { Link } from "expo-router";
-import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
+import { FlatList, Pressable, StyleSheet, Text, View, ActivityIndicator } from "react-native";
 import Area_admin from "../Area_admin";
 import ProtectedRoute from "../../../protected_router/ProtectedRoute";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "../../layout_patterns_components/Header";
+import api from "../../../api";
+import { useAuth } from "../../../auth_context/AuthContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useSafeAreaFrame } from "react-native-safe-area-context";
 
 function Interacoes_finalizadas() {
+    const {decodeToken} = useAuth();
+    const [usuarioId, setUsuarioId] = useState("")
     const [carregamento, setCarregamento] = useState(false)
     const relatos = [
         {
@@ -40,6 +46,62 @@ function Interacoes_finalizadas() {
         },
 
     ]
+
+    const loadToken = async () => {
+        try {
+            const token_response = await AsyncStorage.getItem("token")
+            return token_response
+
+        } catch (error) {
+            console.log("Erro ao acessar o token")
+        }
+    }
+
+    useEffect(() => {
+        const processToken = async () => {
+            const token = await loadToken();
+            console.log("Token no usuário: " + token);
+        
+            if (token) {
+                try {
+                    const tokenDecodificado = decodeToken(token);
+                    console.log("Token decode no nova_interação: ", tokenDecodificado);
+                    setUsuarioId(tokenDecodificado.user_id)
+                } catch (error) {
+                    console.error("Erro ao decodificar o token: ", error);
+                }
+            } else {
+                console.log("No token found");
+                return null
+            }
+        };
+        processToken()
+    }, [])
+
+    // puxar interações finalizadas - GET
+    useEffect(() => {
+
+        const interacoes_finalizadas = async () => {
+            setCarregamento(true)
+            try {
+                const response = await api.get(`/api/ouvidoria/v1/reclamacoes/${2}/`)
+                
+                if (response.status < 200 && response.status >= 300) {
+                    throw new Error("Erro ao alterar interação")
+                }
+
+                console.log("Interações finalizadas: ", response.data)
+
+            } catch (error) {
+                console.log("Erro ao puxar as interções finalizadas: " + error.status)
+            } finally {
+                setCarregamento(false)
+            }
+        }
+    
+        interacoes_finalizadas(usuarioId)
+    }, [])
+
 
     return (
         <ProtectedRoute>

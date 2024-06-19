@@ -12,7 +12,6 @@ function Login() {
     const {login, verifyToken} = useAuth();
     const token = AsyncStorage.getItem('token') ? AsyncStorage.getItem('token') : "";
     const refreshToken = AsyncStorage.getItem('refreshToken') ? AsyncStorage.getItem("refreshToken") : "";
-
     const [loading, setLoading] = useState(false);
 
     // estado inicial
@@ -53,9 +52,8 @@ function Login() {
             })
         } else {
             Alert.alert("Usuário não encontrado!")
+            setLoading(false)
         }
-
-        setLoading(false)
     }
 
     AsyncStorage.getItem("token").then(token => console.log("Sessão do usuário: ", token))

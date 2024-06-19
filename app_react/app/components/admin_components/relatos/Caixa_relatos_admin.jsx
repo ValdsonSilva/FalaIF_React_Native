@@ -4,6 +4,7 @@ import Header from "../../layout_patterns_components/Header";
 import ProtectedRoute from "../../../protected_router/ProtectedRoute";
 import api from "../../../api";
 import { useEffect, useState } from "react";
+import { useSafeAreaFrame } from "react-native-safe-area-context";
 
 
 function Caixa_relatos_admin() {
@@ -11,6 +12,7 @@ function Caixa_relatos_admin() {
     const [relatos, setRelatos] = useState([])
     const [tipoRelatos, setTipoRelatos] = useState([])
     const [carregamento, setCarregamento] = useState(false)
+    const [loading, setLoading] = useState({})
     const tipo_relato = [
         {   
             descricao: "Estrutural", 
@@ -52,46 +54,11 @@ function Caixa_relatos_admin() {
 
     }, [])
 
-
-    // const relatos = [
-    //     {
-    //         id_chamado: 1,
-    //         titulo: "Radio com problema",
-    //         texto_chamado: "Radio está com problemas elétricos",
-    //         id_bloco: "",
-    //         id_sala: "",
-    //         campos: "IFPI-Floriano",
-    //         status: "lida",
-    //         situação: "1-aberto"
-    //     },
-    //     {
-    //         id_chamado: 2,
-    //         titulo: "Radio com problema",
-    //         texto_chamado: "Radio está com problemas elétricos",
-    //         id_bloco: "",
-    //         id_sala: "",
-    //         campos: "IFPI-Floriano",
-    //         status: "lida",
-    //         situação: "1-aberto"
-    //     },
-    //     {
-    //         id_chamado: 3,
-    //         titulo: "Radio com problema",
-    //         texto_chamado: "Radio está com problemas elétricos",
-    //         id_bloco: "",
-    //         id_sala: "",
-    //         campos: "IFPI-Floriano",
-    //         status: "lida",
-    //         situação: "1-aberto"
-    //     },
-
-    // ]
-
     useEffect(() => {
         const get_status_reclamacao =  async () => {
 
             try {
-                const response = await api.get("/api/ouvidoria/v1/tiposeclamacoes/");
+                const response = await api.get("/api/ouvidoria/v1/statusreclamacoes/");
     
                 if (response.status < 200 && response.status >= 300) {
                     throw new Error("Erro");
@@ -104,6 +71,43 @@ function Caixa_relatos_admin() {
         }
         get_status_reclamacao()
     }, [])
+
+    function handleFechamento(id, id_usuario, tipo_reclamacao, bloco, data_reclamacao, descricao, titulo) {
+        
+        const solicitar_fechamento = async (id, id_usuario, tipo_reclamacao, bloco, data_reclamacao, descricao, titulo) => {
+            setLoading(prevState => ({...prevState, [id]: true}))
+            try {
+                const response = await api.patch(`/api/ouvidoria/v1/reclamacoes/${id}/`, {
+                    usuario: id_usuario,
+                    status_reclamacao: 2, // manual (finalizada == 2)
+                    tipo_reclamacao: tipo_reclamacao,
+                    bloco: bloco,
+                    data_reclamacao: data_reclamacao,
+                    descricao_reclamacao: descricao,
+                    titulo: titulo,
+                    lida: true // manual
+                })
+
+                if (response.status < 200 && response.status >= 300) {
+                    throw new Error("Erro")
+                }
+                console.log("Fechamento: ", response)
+
+            } catch (error) {
+                console.log("Erro ao solicitar fechamento da reclamação: " + error.status)
+            } finally {
+                setLoading(prevState => ({...prevState, [id]: false}))
+                reloadScreen()
+            }
+        }
+
+        solicitar_fechamento(id, id_usuario, tipo_reclamacao, bloco, data_reclamacao, descricao, titulo)
+    }
+
+    const reloadScreen = () => {
+        const currentRoute = segments.join('/');
+        router.replace(currentRoute);
+    };
 
     console.log("\ntipo_chamado_reclamação: ", tipoRelatos) 
 
@@ -145,10 +149,8 @@ function Caixa_relatos_admin() {
                                                 </Text>
                                     </Text>
 
-                                    <Pressable onPress={() => Alert.alert("É melhoor")}>
-                                        <Text style={styles.botao_fechamento}>
-                                            Solicitar fechamento
-                                        </Text>
+                                    <Pressable  onPress={item.status_reclamacao !== 2 ? () => handleFechamento(item.id, item.usuario, item.status_reclamacao, item.bloco, item.data_reclamacao, item.descricao_reclamacao, item.titulo) : null}>
+                                        {loading[item.id] ? (<ActivityIndicator size={"small"} color="red"/>) : (<Text style={ item.status_reclamacao !== 2 ? styles.botao_fechamento : styles.botao_fechamento_desabilitado}>Solicitar fechamento</Text>)}
                                     </Pressable>
 
                                     <Text style={{marginTop: 50}}>{item.data_reclamacao}</Text>
@@ -277,5 +279,17 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
         elevation: 5, // For Android
+    },
+    botao_fechamento_desabilitado : {
+        backgroundColor: "#d1d1da", 
+        color: "#a9a9ac",
+        width: 200,
+        height: 50,
+        textAlignVertical: "center",
+        textAlign: "center",
+        fontSize: 16,
+        borderRadius: 20,
+        borderStyle: "solid",
+        borderColor: "#000",
     }
 })

@@ -60,7 +60,6 @@ function Nova_interacao() {
     // setUserid(token_processado)
     console.log("Id do usuário: ", user_id)
 
-
     const handleSubmit = async () => {
         // Aqui você pode adicionar a lógica de envio do formulário
         try {
@@ -85,26 +84,6 @@ function Nova_interacao() {
             setBloco('')
         }
     };
-
-    // get status_reclamação
-    // useEffect(() => {
-    //     const get_status_reclamacao =  async () => {
-
-    //         try {
-    //             const response = await api.get("/api/ouvidoria/v1/tiposeclamacoes/");
-    
-    //             if (response.status < 200 && response.status >= 300) {
-    //                 throw new Error("Erro");
-    //             }
-    
-    //             console.log("\ntipo_chamado_reclamação: ", response.data)
-    
-    //         } catch (error) {
-    //             console.log("Erro ao puxar os status de reclamação")
-    //         }
-    //     }
-    //     get_status_reclamacao()
-    // }, [])
 
     useEffect(() => {
         const get_status_reclamacao =  async () => {
