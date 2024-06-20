@@ -65,8 +65,9 @@ export const AuthProvider = ({ children }) => {
 
                 console.log("token: ", accessToken)
                 console.log("\nrefreshToken: ", refreshToken)
-    
                 redirecionarParaProximaTela(accessToken)
+                return response
+    
             } else {
                 // Se a resposta não for bem-sucedida, lança um erro
                 throw new Error(`Falha ao fazer login: ${response.status}`);
@@ -202,13 +203,15 @@ export const AuthProvider = ({ children }) => {
         }
     }
 
-    const getCurrentDateFormatted = () => {
-        const currentDate = new Date();
-        const day = String(currentDate.getDate()).padStart(2, '0');
-        const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // Janeiro é 0!
-        const year = currentDate.getFullYear();
+    // data formatada
+    const getCurrentDateFormatted = (data) => {
+        const regex = /^(\d{4})-(\d{2})-(\d{2})T/;
+
+        const formattedDate = data.replace(regex, "$3/$2/$1T");
+
+        const finalFormattedDate = formattedDate.split('T')[0];
     
-        return `${day}/${month}/${year}`;
+        return finalFormattedDate;
     };
 
     // retornando o nosso provider com os dados do nosso contexto

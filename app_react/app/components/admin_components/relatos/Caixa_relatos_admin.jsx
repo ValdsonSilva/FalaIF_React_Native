@@ -1,4 +1,4 @@
-import { Link } from "expo-router";
+import { Link, useSegments } from "expo-router";
 import { ActivityIndicator, Alert, FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import Header from "../../layout_patterns_components/Header";
 import ProtectedRoute from "../../../protected_router/ProtectedRoute";
@@ -13,6 +13,7 @@ function Caixa_relatos_admin() {
     const [tipoRelatos, setTipoRelatos] = useState([])
     const [carregamento, setCarregamento] = useState(false)
     const [loading, setLoading] = useState({})
+    const segments = useSegments();
     const tipo_relato = [
         {   
             descricao: "Estrutural", 
@@ -143,9 +144,9 @@ function Caixa_relatos_admin() {
 
                                     <Text style={{fontWeight: 500, fontSize: 12}}>
                                         Status: <Text>
-                                                    {item.status_reclamacao === 1 ? "Estrutural" : ""}
-                                                    {item.status_reclamacao === 2 ? "Pessoal" : ""}
-                                                    {item.status_reclamacao === 3 ? "Acadêmico" : ""}
+                                                    {item.tipo_reclamacao === 1 ? "Estrutural" : ""}
+                                                    {item.tipo_reclamacao === 2 ? "Pessoal" : ""}
+                                                    {item.tipo_reclamacao === 3 ? "Acadêmico" : ""}
                                                 </Text>
                                     </Text>
 

@@ -1,20 +1,18 @@
-import { Link } from "expo-router";
-import { FlatList, Pressable, StyleSheet, Text, View, ActivityIndicator } from "react-native";
-import Area_admin from "../Area_admin";
+import { ActivityIndicator, FlatList, StyleSheet, Text, View } from "react-native";
 import ProtectedRoute from "../../../protected_router/ProtectedRoute";
-import { useEffect, useState } from "react";
 import Header from "../../layout_patterns_components/Header";
-import api from "../../../api";
+import { useEffect, useState } from "react";
 import { useAuth } from "../../../auth_context/AuthContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import Icon from "react-native-vector-icons/Ionicons"
+import api from "../../../api";
 
-function Interacoes_finalizadas() {
+function Interacoes_usuario_finalizadas() {
     const {decodeToken, getCurrentDateFormatted} = useAuth();
     const [usuarioId, setUsuarioId] = useState("")
     const [carregamento, setCarregamento] = useState(false)
     const [interacoesFinalizadas, setInteracoesFinalizadas] = useState([])
 
+    
     const loadToken = async () => {
         try {
             const token_response = await AsyncStorage.getItem("token")
@@ -33,27 +31,27 @@ function Interacoes_finalizadas() {
             if (token) {
                 try {
                     const tokenDecodificado = decodeToken(token);
-                    console.log("Token decode no nova_interação: ", tokenDecodificado);
+                    console.log("Token decode no interacao_usuario_finalizada: ", tokenDecodificado);
                     setUsuarioId(tokenDecodificado.user_id)
                 } catch (error) {
                     console.error("Erro ao decodificar o token: ", error);
                 }
             } else {
-                console.log("No token found");
+                console.log("Token não encontrado");
                 return null
             }
         };
         processToken()
     }, [])
 
-
     // puxar interações finalizadas - GET
     useEffect(() => {
+        console.log("Id do usuário: ", usuarioId)
 
-        const interacoes_finalizadas = async () => {
+        const interacoes_finalizadas = async (id_usuario) => {
             setCarregamento(true)
             try {
-                const response = await api.get(`/api/ouvidoria/v1/reclamacoes/?status_reclamacao_id=${encodeURIComponent(2)}`)
+                const response = await api.get(`/api/ouvidoria/v1/reclamacoes/?usuario=${encodeURIComponent(id_usuario)}&status_reclamacao_id=${encodeURIComponent(2)}`);
                 
                 if (response.status < 200 && response.status >= 300) {
                     throw new Error("Erro ao alterar interação")
@@ -72,20 +70,17 @@ function Interacoes_finalizadas() {
         interacoes_finalizadas(usuarioId)
     }, [])
 
-    const handleRemoveItem = (id) => {
-        setInteracoesFinalizadas(interacoesFinalizadas.filter(item => item.id !== id))
-    }
 
     return (
         <ProtectedRoute>
-             <Header/>
-
+            <Header/>
+            
             <View style={styles.titulo_container}>
                 <Text style={styles.titulo}>
-                    Acompanhe as sugestões finalizadas
+                    Acompanhe suas interações finalizadas
                 </Text>
             </View>
-            
+
             <View style={styles.container}>
 
                 {carregamento ? <ActivityIndicator size={"large"} color="#fff"/> : ""}
@@ -114,9 +109,9 @@ function Interacoes_finalizadas() {
                                                 </Text>
                                     </Text>
 
-                                    <Pressable onPress={() => handleRemoveItem(item.id)} style={styles.removeButton}>
-                                        <Icon name="trash" size={20} color={"red"}/>
-                                    </Pressable>
+                                    {/* <Pressable  onPress={item.status_reclamacao !== 2 ? () => handleFechamento(item.id, item.usuario, item.status_reclamacao, item.bloco, item.data_reclamacao, item.descricao_reclamacao, item.titulo) : null}>
+                                        {loading[item.id] ? (<ActivityIndicator size={"small"} color="red"/>) : (<Text style={ item.status_reclamacao !== 2 ? styles.botao_fechamento : styles.botao_fechamento_desabilitado}>Solicitar fechamento</Text>)}
+                                    </Pressable> */}
 
                                     <Text style={{marginTop: 50}}>{getCurrentDateFormatted(item.data_reclamacao)}</Text>
                                     <Text>IFPI-Floriano</Text>
@@ -131,7 +126,7 @@ function Interacoes_finalizadas() {
     )
 }
 
-export default Interacoes_finalizadas
+export default Interacoes_usuario_finalizadas
 
 const styles = StyleSheet.create({
     header_container : {
@@ -241,11 +236,5 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
         elevation: 5, // For Android
-    },
-    removeButton: {
-        position: 'absolute',
-        top: 10,
-        right: 10,
-        padding: 5,
-    },
+    }
 })

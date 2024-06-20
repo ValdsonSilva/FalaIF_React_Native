@@ -37,7 +37,7 @@ function Perfil() {
                         Vejas as interaçõea ativas ;)*
                     </Text>
                 </Link>
-                <Link style={styles.interacoes_finalizadas} href="../user_components/Interacoes_finalizadas/Interacoes_finalizadas">
+                <Link style={styles.interacoes_finalizadas} href="../user_components/Interacoes_finalizadas/Interacoes_usuario_finalizadas">
                     <Text style={styles.texto_grande}>Interações finalizadas{`\n`}</Text>
                     <Text style={styles.texto_pequeno}>
                         Revisite suas ideias ;)*

@@ -44,12 +44,24 @@ function Login() {
             Alert.alert("Preencha os campos do formulário!")
             router.push("/")
         } else if (loginForm || senha) {
-            // criar os tokens/fazer login no app
-            await login(loginForm, senha)
-            setFormData({
-                loginForm: '',
-                senha: '',
-            })
+            
+            try {
+                // criar os tokens/fazer login no app
+                const response = await login(loginForm, senha)
+                setFormData({
+                    loginForm: '',
+                    senha: '',
+                })
+
+                if (response.status < 200 && response.status >= 300) {
+                    throw new Error("erro")
+                }
+
+            } catch (erro) {
+                console.log("Erro durante o login" + erro)
+                setLoading(false)
+            }
+
         } else {
             Alert.alert("Usuário não encontrado!")
             setLoading(false)
