@@ -1,4 +1,4 @@
-import { View, TextInput, StyleSheet, Text, Alert, Pressable, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, TextInput, StyleSheet, Text, Alert, Pressable, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
 import Header from "../../layout_patterns_components/Header"
 import Footer from "../../layout_patterns_components/Footer"
 import { useEffect, useState } from 'react';
@@ -22,6 +22,7 @@ function Nova_interacao() {
     const {decodeToken} = useAuth();
     const [user_id, setUserid] = useState("")
     const date = getCurrentDate();
+    const [loading, setLoading] = useState(false);
 
     const loadToken = async () => {
         try {
@@ -62,6 +63,7 @@ function Nova_interacao() {
 
     const handleSubmit = async () => {
         // Aqui você pode adicionar a lógica de envio do formulário
+        setLoading(true)
         try {
                 const response = await api.post("/api/ouvidoria/v1/reclamacoes/",{
                     usuario: user_id,
@@ -82,6 +84,7 @@ function Nova_interacao() {
             setTitulo('')
             setTextoChamado('')
             setBloco('')
+            setLoading(false)
         }
     };
 
@@ -168,8 +171,14 @@ function Nova_interacao() {
                     
                     <Pressable
                         onPress={handleSubmit}
-                    >
-                        <Text style={styles.botao_enviar}>Enviar</Text>
+                    >   
+                        <Text style={styles.botao_enviar}>
+                            {loading ?  (
+                                        <ActivityIndicator size={"small"} color={"#fff"}/>
+                                    ) : (
+                                        <Text>Enviar</Text>
+                                    )}
+                        </Text>
                     </Pressable>
             </View>
 

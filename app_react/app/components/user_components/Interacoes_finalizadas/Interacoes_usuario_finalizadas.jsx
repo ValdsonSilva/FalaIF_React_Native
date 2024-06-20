@@ -11,6 +11,7 @@ function Interacoes_usuario_finalizadas() {
     const [usuarioId, setUsuarioId] = useState("")
     const [carregamento, setCarregamento] = useState(false)
     const [interacoesFinalizadas, setInteracoesFinalizadas] = useState([])
+    const [loading, setLoading] = useState(false);
 
     
     const loadToken = async () => {
@@ -44,31 +45,34 @@ function Interacoes_usuario_finalizadas() {
         processToken()
     }, [])
 
-    // puxar interações finalizadas - GET
+     // puxar interações finalizadas - GET
+    const interacoes_finalizadas = async (id_usuario) => {
+        setCarregamento(true)
+        try {
+            const response = await api.get(`/api/ouvidoria/v1/reclamacoes/?usuario=${encodeURIComponent(id_usuario)}&status_reclamacao_id=${encodeURIComponent(2)}`);
+            
+            if (response.status < 200 || response.status >= 300) {
+                throw new Error("Erro ao alterar interação")
+            }
+
+            console.log("Interações finalizadas: ", response.data)
+            setInteracoesFinalizadas(response.data.results)
+
+        } catch (error) {
+            console.log("Erro ao puxar as interções finalizadas: " + error.status)
+        } finally {
+            setCarregamento(false)
+        }
+    }
+
     useEffect(() => {
         console.log("Id do usuário: ", usuarioId)
-
-        const interacoes_finalizadas = async (id_usuario) => {
-            setCarregamento(true)
-            try {
-                const response = await api.get(`/api/ouvidoria/v1/reclamacoes/?usuario=${encodeURIComponent(id_usuario)}&status_reclamacao_id=${encodeURIComponent(2)}`);
-                
-                if (response.status < 200 && response.status >= 300) {
-                    throw new Error("Erro ao alterar interação")
-                }
-
-                console.log("Interações finalizadas: ", response.data)
-                setInteracoesFinalizadas(response.data.results)
-
-            } catch (error) {
-                console.log("Erro ao puxar as interções finalizadas: " + error.status)
-            } finally {
-                setCarregamento(false)
-            }
+        // a função só executa se houver um id na req
+        if (usuarioId) {
+            interacoes_finalizadas(usuarioId)
         }
-    
-        interacoes_finalizadas(usuarioId)
-    }, [])
+
+    }, [usuarioId])
 
 
     return (
@@ -95,13 +99,13 @@ function Interacoes_usuario_finalizadas() {
                                     <Text>{item.descricao_reclamacao}</Text>
 
                                     <Text style={{fontWeight: 500, fontSize: 12}}>
-                                        Tipo: <Text>
+                                        Tipo:   <Text>
                                                     {item.tipo_reclamacao === 2 ? "Pessoal" : ""}
                                                     {item.tipo_reclamacao === 3 ? "Acadêmico" : ""}
                                                     {item.tipo_reclamacao === 1 ? "Estrutural" : ""}
                                                 </Text>
                                     </Text>
-                                    <Text style={{fontWeight: 500, fontSize: 12}}>
+                                    <Text style={{fontWeight: 500, fontSize: 20}}>
                                         Status: <Text>
                                                     {item.status_reclamacao === 1 ? "Andamento" : ""}
                                                     {item.status_reclamacao === 2 ? "Finalizada" : ""}
