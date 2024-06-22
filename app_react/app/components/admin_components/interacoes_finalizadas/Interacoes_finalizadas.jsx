@@ -46,7 +46,6 @@ function Interacoes_finalizadas() {
         processToken()
     }, [])
 
-
     // puxar interações finalizadas - GET
     useEffect(() => {
 
@@ -96,7 +95,6 @@ function Interacoes_finalizadas() {
                     renderItem={({item}) => (
                         <View style={styles.list_item}>
                                     <Text style={{color: "darkblue", fontSize: 25, fontWeight: "500"}}>{item.titulo}</Text>
-
                                     <Text>{item.descricao_reclamacao}</Text>
 
                                     <Text style={{fontWeight: 500, fontSize: 12}}>

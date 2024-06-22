@@ -173,7 +173,7 @@ function Nova_interacao() {
                         onPress={handleSubmit}
                     >   
                         <Text style={styles.botao_enviar}>
-                            {loading ?  (
+                            {loading ? (
                                         <ActivityIndicator size={"small"} color={"#fff"}/>
                                     ) : (
                                         <Text>Enviar</Text>

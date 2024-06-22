@@ -1,14 +1,14 @@
-import { Link, useSegments } from "expo-router";
+import { Link, router, useSegments } from "expo-router";
 import { ActivityIndicator, Alert, FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import Header from "../../layout_patterns_components/Header";
 import ProtectedRoute from "../../../protected_router/ProtectedRoute";
 import api from "../../../api";
 import { useEffect, useState } from "react";
-import { useSafeAreaFrame } from "react-native-safe-area-context";
+import { useAuth } from "../../../auth_context/AuthContext";
 
 
 function Caixa_relatos_admin() {
-
+    const {getCurrentDateFormatted} = useAuth()
     const [relatos, setRelatos] = useState([])
     const [tipoRelatos, setTipoRelatos] = useState([])
     const [carregamento, setCarregamento] = useState(false)
@@ -33,7 +33,7 @@ function Caixa_relatos_admin() {
         const carregar_relatos = async () => {
             setCarregamento(true)
             try {
-                const response = await api.get("/api/ouvidoria/v1/reclamacoes/")
+                const response = await api.get(`/api/ouvidoria/v1/reclamacoes/`)
 
                 if (response.status < 200 || response.status >= 300) {
                     throw new Error("Erro nos relatos" + response.status)
@@ -52,7 +52,6 @@ function Caixa_relatos_admin() {
         }
 
         carregar_relatos()
-
     }, [])
 
     useEffect(() => {
@@ -110,14 +109,17 @@ function Caixa_relatos_admin() {
         router.replace(currentRoute);
     };
 
-    console.log("\ntipo_chamado_reclamação: ", tipoRelatos) 
+    console.log("tipo_chamado_reclamação: ", tipoRelatos) 
 
     const relatosCompletos = relatos.map(relato => {
         const tipoRelatoDescricao = tipo_relato.find(tr => tr.id === relato.status_reclamacao)?.descricao || "";
         return tipoRelatoDescricao
     });
 
+    const relatosFiltrados = relatos.filter(relato => relato.status_reclamacao == 1)
+
     console.log("Rela: ", relatosCompletos)
+    console.log("Relatos em Andamento: ", relatosFiltrados)
 
     return (
         <ProtectedRoute>
@@ -133,15 +135,14 @@ function Caixa_relatos_admin() {
 
                 {carregamento ? <ActivityIndicator size={"large"} color="#fff"/> : ""}
 
-                {relatos ? 
+                {relatosFiltrados ? 
                         (<FlatList
-                            data={relatos}
+                            data={relatosFiltrados}
                             renderItem={({item}) => (
                                 <View style={styles.list_item}>
                                     <Text style={{color: "darkblue", fontSize: 25, fontWeight: "500"}}>{item.titulo}</Text>
-
                                     <Text>{item.descricao_reclamacao}</Text>
-
+                                    <Text>{item.status_reclamacao}</Text>
                                     <Text style={{fontWeight: 500, fontSize: 12}}>
                                         Status: <Text>
                                                     {item.tipo_reclamacao === 1 ? "Estrutural" : ""}
@@ -151,10 +152,14 @@ function Caixa_relatos_admin() {
                                     </Text>
 
                                     <Pressable  onPress={item.status_reclamacao !== 2 ? () => handleFechamento(item.id, item.usuario, item.status_reclamacao, item.bloco, item.data_reclamacao, item.descricao_reclamacao, item.titulo) : null}>
-                                        {loading[item.id] ? (<ActivityIndicator size={"small"} color="red"/>) : (<Text style={ item.status_reclamacao !== 2 ? styles.botao_fechamento : styles.botao_fechamento_desabilitado}>Solicitar fechamento</Text>)}
+
+                                        {loading[item.id] ? (<ActivityIndicator size={"small"} color="blue"/>) : (<Text style={ item.status_reclamacao !== 2 ? styles.botao_fechamento : styles.botao_fechamento_desabilitado}>
+                                            Solicitar fechamento
+                                        </Text>)}
+
                                     </Pressable>
 
-                                    <Text style={{marginTop: 50}}>{item.data_reclamacao}</Text>
+                                    <Text style={{marginTop: 50}}>{getCurrentDateFormatted(item.data_reclamacao)}</Text>
                                     <Text>IFPI-Floriano</Text>
                                 </View>
                             )}

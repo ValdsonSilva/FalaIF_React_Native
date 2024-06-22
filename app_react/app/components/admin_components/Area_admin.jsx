@@ -2,7 +2,6 @@ import { Link } from "expo-router"
 import { Alert, Button, Platform, StyleSheet, Text, View } from "react-native"
 import Footer from "../layout_patterns_components/Footer"
 import ProtectedRoute from "../../protected_router/ProtectedRoute"
-import AsyncStorage from "@react-native-async-storage/async-storage"
 import { useAuth } from "../../auth_context/AuthContext"
 
 
@@ -27,7 +26,7 @@ function Area_admin() {
 
             {/* Links de navegação */}
             <View style={styles.nav_container}>
-                <Link style={styles.interacoes_alunos} href="./relatos/Caixa_relatos_admin">  
+                <Link style={styles.interacoes_alunos} href="./interacoes/Caixa_relatos_admin">  
                     Acompanhe as interações dos alunos{`\n`}
                     <Text style={styles.texto_pequeno}>
                         Vejas as interaçõea ativas ;)

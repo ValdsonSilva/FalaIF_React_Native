@@ -47,13 +47,13 @@ function User_interacoes() {
     const interacoes_finalizadas = async (id_usuario) => {
         setCarregamento(true)
         try {
-            const response = await api.get(`/api/ouvidoria/v1/reclamacoes/?usuario=${encodeURIComponent(id_usuario)}`);
+            const response = await api.get(`/api/ouvidoria/v1/reclamacoes/?usuario=${encodeURIComponent(id_usuario)}&status_reclamacao_id=${encodeURIComponent(1)}`);
             
             if (response.status < 200 || response.status >= 300) {
                 throw new Error("Erro ao alterar interação")
             }
 
-            console.log("Interações finalizadas: ", response.data)
+            console.log("Interações finalizadas: ", response.data.results)
             setInteracoesFinalizadas(response.data.results)
 
         } catch (error) {
@@ -96,11 +96,11 @@ function User_interacoes() {
                                     <Text>{item.descricao_reclamacao}</Text>
 
                                     <Text style={{fontWeight: 500, fontSize: 12}}>
-                                        Tipo:   <Text>
-                                                    {item.tipo_reclamacao === 2 ? "Pessoal" : ""}
-                                                    {item.tipo_reclamacao === 3 ? "Acadêmico" : ""}
-                                                    {item.tipo_reclamacao === 1 ? "Estrutural" : ""}
-                                                </Text>
+                                        Tipo: <Text>
+                                                {item.tipo_reclamacao === 2 ? "Pessoal" : ""}
+                                                {item.tipo_reclamacao === 3 ? "Acadêmico" : ""}
+                                                {item.tipo_reclamacao === 1 ? "Estrutural" : ""}
+                                              </Text>
                                     </Text>
                                     <Text style={{fontWeight: 500, fontSize: 20}}>
                                         Status: <Text>
